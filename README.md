@@ -24,13 +24,57 @@ The weather data is sourced from [Data.gov.sg](https://data.gov.sg)'s 24-hour an
    - Duplicate `.env.copy` and rename it to `.env`.
 
 2. **Configure Telegram Bot token**
-   - Start a conversation with [@BotFather](https://t.me/BotFather)
-   - Create a new bot with a unique username
-   - Get the token and add it to the `.env` file by setting `TOKEN`
+   - Start a conversation with [@BotFather](https://t.me/BotFather).
+   - Create a new bot with a unique username.
+   - Get the token and add it to the `.env` file by setting `TOKEN`.
 
-3. **Configure AWS Lambda and AWS API Gateway**
-   - ...
-   
+## Configure AWS Lambda and AWS API Gateway
+
+#### Add Code to Lambda
+Upload your Python code to an AWS Lambda function.
+
+#### Adding Environment Variables
+1. Go to **Lambda > Functions > your_function**.
+2. Scroll down to the **Configuration** tab.
+3. Click on **Environment variables**.
+4. Add the environment variables from your `.env` file.
+
+#### Adding Lambda Layers
+1. Go to **Lambda > Functions > your_function**.
+2. Scroll down to the **Layers** section.
+3. Click **Add a layer** and configure:
+   - **Layer source:** AWS layers
+     - Select **AWS-AppConfig-Extension** and choose the latest version.
+   - **Layer source:** AWS layers
+     - Select **AWSOpenTelemetryDistroPython** and choose the latest version.
+
+#### Configuring Runtime Settings
+Edit the **Handler** field based on your Python file name and function name.  
+For example: If your file is `weatherbot_lambda_v2.py` and the function is `lambda_handler`, set the handler to `weatherbot_lambda_v2.lambda_handler`.
+
+#### Configuring API Gateway
+1. Go to **API Gateway > APIs > Create API**.
+2. Choose an API type:
+   - Select **HTTP API**.
+3. Configure Integrations:
+   - Select **Lambda** and pick your Lambda function from the dropdown list.
+4. Configure Routes:
+   - **Method:** ANY  
+   - **Resource path:** `/`
+5. After successful creation, the API Gateway will be linked to your Lambda function.
+
+#### Add API Gateway (Webhook Link) to Telegram
+1. Go to **API Gateway > APIs > your_api_gateway**.
+2. Copy the **Default endpoint** value.
+3. Run the following URL in your browser or a tool like Postman:
+https://api.telegram.org/bot{your_bot_token}/setWebhook?url={default_endpoint_value}
+
+## Resources
+**Telegram Bot API Documentation (Official)**  
+- [Available Methods](https://core.telegram.org/bots/api#available-methods)  
+  - This bot uses the `sendMessage` method.  
+- [Available Types (Objects)](https://core.telegram.org/bots/api#available-types)  
+
 ## License
 This project is open-source and available for use under the [MIT License](LICENSE).
 
